@@ -1,0 +1,6 @@
+name = Modify Site Information
+description = "Alter the site information form and add text field for siteapikey."
+package = Custom
+version = VERSION
+core = 7.x
+configure = admin/config/system/site-information

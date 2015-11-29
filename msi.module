@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * @file
+ * Used to alter the Site information form and add a textfield for siteapikey.
+ */
+
+/**
+ * Implements hook_form_alter().
+ */
+function msi_form_alter(&$form, &$form_state, $form_id){
+
+  // Check form id of System settings form
+  if('system_site_information_settings' == $form_id){
+
+      // Add textfield for API Key.
+      $form['siteapikey'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Site API Key'),
+        '#default_value' => empty(variable_get('siteapikey')) ? 'No API Key yet' : variable_get('siteapikey'),
+      );
+      // Change the Submit button Text.
+      $form['actions']['submit']['#value'] = t('Update Configuration');
+      $form['#submit'][] = 'msi_system_site_information_form_submit';
+  }
+}
+
+/**
+ * Implement custom function for display message for save API Key.
+ */
+function msi_system_site_information_form_submit($form, &$form_state){
+  drupal_set_message(t('The Site API Key has been saved with @apikey', array('@apikey' => $form_state['values']['siteapikey'])),'status');
+}
