@@ -49,8 +49,8 @@ function msi_system_site_information_form_submit($form, &$form_state){
  
 
 /**
- * Define menu_callback().
- * 
+ * Define page callback function.
+ * This function will return the json of apropriate node if apikey will match.
  */
 function page_json_output($node_id){
   // load node
