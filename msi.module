@@ -6,6 +6,21 @@
  */
 
 /**
+ * Implements hook_menu().
+ */
+function msi_menu() {
+  $items = array();
+  $items['page_json/%/%'] = array(
+    'title' => 'Json Result',
+    'page callback' => 'page_json_output',
+    'page arguments' => array(2),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
  * Implements hook_form_alter().
  */
 function msi_form_alter(&$form, &$form_state, $form_id){
@@ -17,7 +32,7 @@ function msi_form_alter(&$form, &$form_state, $form_id){
       $form['siteapikey'] = array(
         '#type' => 'textfield',
         '#title' => t('Site API Key'),
-        '#default_value' => empty(variable_get('siteapikey')) ? 'No API Key yet' : variable_get('siteapikey'),
+        '#default_value' => empty(variable_get('siteapikey')) ? trim('No API Key yet') : variable_get('siteapikey'),
       );
       // Change the Submit button Text.
       $form['actions']['submit']['#value'] = t('Update Configuration');
@@ -30,4 +45,26 @@ function msi_form_alter(&$form, &$form_state, $form_id){
  */
 function msi_system_site_information_form_submit($form, &$form_state){
   drupal_set_message(t('The Site API Key has been saved with @apikey', array('@apikey' => $form_state['values']['siteapikey'])),'status');
+}
+ 
+
+/**
+ * Define menu_callback().
+ * 
+ */
+function page_json_output($node_id){
+  // load node
+  $node_data = node_load($node_id);
+  // get apikey 
+  $apikey = variable_get('siteapikey');
+  // check if apikey is exist with apropriate node then return json of node.
+  if($node_data->type =='page' && $apikey == arg(1)){
+    return drupal_json_output($node_data);
+    drupal_exit();
+  }
+  // if apikey is not associate with nid then restrict user to get json result
+  else if($node_data->type =='page' && $apikey != arg(1)){
+  drupal_access_denied();
+  drupal_exit();
+  }
 }
